@@ -14,7 +14,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -34,7 +33,7 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
     private static Integer COUNT = 0;
     private static final String INDEX_URL = "https://www.xiaotao.vip";
 
-    private static final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(20, 20, 60, TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>(100000));
+    private static final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(32, 32, 60, TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>(100000));
 
     @Override
     public void getXiaoTaoSource(Integer totalCount) throws Exception {
@@ -77,10 +76,8 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
             }
         } catch (Exception e) {
             log.error(url + "_目录查询报错：", e);
-            if(e instanceof SocketTimeoutException){
-                log.error("链接超时，重新爬取");
-                THREAD_POOL.submit(() -> this.secondDir(url));
-            }
+            log.error("链接超时，重新爬取:", e.getMessage());
+            THREAD_POOL.submit(() -> this.secondDir(url));
         }
     }
 
