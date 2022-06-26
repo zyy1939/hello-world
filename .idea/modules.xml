@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../demo/demo.iml" filepath="$PROJECT_DIR$/../demo/demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/hello-world.iml" filepath="$PROJECT_DIR$/.idea/hello-world.iml" />
       <module fileurl="file://$PROJECT_DIR$/jeecg-boot-module-system/jeecg-boot-module-system.iml" filepath="$PROJECT_DIR$/jeecg-boot-module-system/jeecg-boot-module-system.iml" />
       <module fileurl="file://$PROJECT_DIR$/jeecg-boot-parent.iml" filepath="$PROJECT_DIR$/jeecg-boot-parent.iml" />

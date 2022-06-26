@@ -8,9 +8,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="jeecg-boot-module-system" />
+        <module name="demo" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="demo" target="1.8" />
       <module name="hello-world" target="1.8" />
       <module name="jeecg-boot-module-system" target="1.8" />
       <module name="jeecg-boot-parent" target="1.8" />
@@ -18,9 +20,10 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="demo" options="-parameters" />
       <module name="hello-world" options="-parameters" />
       <module name="jeecg-boot-module-system" options="-parameters" />
-      <module name="jeecg-boot-parent" options="-parameters" />
+      <module name="jeecg-boot-parent" options="" />
     </option>
   </component>
 </project>

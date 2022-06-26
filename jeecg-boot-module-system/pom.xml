@@ -53,14 +53,12 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 		</dependency>
-
-		<!-- DEMO 示例模块 -->
+		<!-- 网络爬虫 -->
 		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-module-demo</artifactId>
-			<version>${jeecgboot.version}</version>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.15.1</version>
 		</dependency>
-
 	</dependencies>
 
 	<build>
