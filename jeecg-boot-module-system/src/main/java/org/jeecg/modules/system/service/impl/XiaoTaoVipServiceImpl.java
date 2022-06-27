@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTaoVip> implements IXiaoTaoVipService {
 
     private static final String INDEX_URL = "https://www.xiaotao.vip";
+    private static final String SECOND_URL = "https://www.xiaotao.vip/?pan_idx=1&path=";
 
     private static final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(32, 32, 60, TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>(100000));
 
@@ -76,7 +77,7 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
             Elements elements = document.getElementsByClass("tr-item");
             for (Element element : elements) {
                 // 多线程分析当前页面
-                THREAD_POOL.submit(() -> this.saveMusicSource(url, element));
+                THREAD_POOL.submit(() -> this.saveMusicSource(element));
             }
         } catch (Exception e) {
             log.error(url + "_目录查询报错：", e);
@@ -91,7 +92,7 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
         }
     }
 
-    private void saveMusicSource(String url, Element element) {
+    private void saveMusicSource(Element element) {
         try {
             Elements iTag = element.getElementsByTag("i");
             String aClass = iTag.get(0).attributes().get("class");
@@ -103,8 +104,11 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
                     return;
                 }
                 // 目录
-                this.secondDir(url + "/" + element.getElementsByTag("h4").text());
-                log.info(element.getElementsByTag("h4").text());
+                Elements elementsByClass = element.getElementsByClass("tr-company-name");
+                String dataFile = elementsByClass.get(0).attributes().get("data-path");
+                dataFile.replace("&#43;", "%20");
+                this.secondDir(SECOND_URL + dataFile);
+                log.info("文件夹：" + element.getElementsByTag("h4").text());
             } else {
                 // 文件
                 log.info("名称：" + element.getElementsByTag("h4").text());
@@ -142,31 +146,7 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
                 xiaoTaoVip.setType(split[split.length - 1]);
                 xiaoTaoVip.setPath(URLDecoder.decode(dataFile, "UTF-8"));
                 // 下载链接获取
-                //https://bjbgp01.baidupcs.com/file/
-                // 9f8597aba4d51c5c3d1537b25a3b763e
-                // ?bkt=en-00f3aa810d089f20a268fcc500048dcb905d90d80f21594c650e7f6175afc7f76495dfccb367242f2cf27cd7b82ca43acfb0104cefc4c67c805dff234697503b
-                // &fid=1103004779731-250528-475523598815702
-                // &time=1656147384
-                // &sign=FDTAXUVbGERQlBHSKfWqi-DCb740ccc5511e5e8fedcff06b081203-VhC9VMrLQUw6OTgyQMcsC8%2BXbz8%3D
-                // &to=14
-                // &size=1290
-                // &sta_dx=1290
-                // &sta_cs=6946
-                // &sta_ft=m3u
-                // &sta_ct=7
-                // &sta_mt=4
-                // &fm2=MH%2CQingdao%2CAnywhere%2C%2CNone%2Cany
-                // &ctime=1484659702
-                // &mtime=1653933881
-                // &resv0=-1
-                // &resv1=0
-                // &resv2=rlim
-                // &resv3=5
-                // &resv4=1290
-                // &vuk=1103004779731
-                // &iv=2
-                // &htype=&randtype=&tkbind_id=0&newver=1&newfm=1&secfm=1&flow_ver=3&pkey=en-7d5c155c42c8e7fea873c9a237a75003b921a603c31e6f6d73522d82c13240f11c07b2180784f4a06e16f7520d1521f225a67a943a2ea2d5305a5e1275657320&expires=8h&rt=pr&r=646512980&vbdid=2874696881&fin=1.群星《流行经典》.m3u&rtype=1&dp-logid=800127504593687646&dp-callid=0.1&tsl=0&csl=0&fsl=-1&csign=K%2FcbvbmVYCjYGl7qKxZ8Fq%2BSiDQ%3D&so=1&ut=1&uter=0&serv=1&uc=1559654663&ti=c77e04c9862927e5db3708ba472a3e60ac5a0c7ecbfa7122305a5e1275657320&hflag=30&from_type=3&adg=c_7ce307483d8c205c118722bbca8535fe&reqlabel=250528_f_d5e10a4c69aebc74908c25e02fd79c3b_-1_dff5d1bfbb2d0f53965b6b259ed68b23&chkv=2&by=themis
-                xiaoTaoVip.setDownload(null);
+                xiaoTaoVip.setDownload(INDEX_URL + URLDecoder.decode(dataFile, "UTF-8"));
                 // 验证歌曲是否存在
                 XiaoTaoVip entity = new XiaoTaoVip();
                 entity.setName(xiaoTaoVip.getName());
@@ -179,10 +159,6 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
 
                 // 歌曲入库
                 this.save(xiaoTaoVip);
-//                COUNT--;
-//                if (COUNT <= 0) {
-//                    throw new IllegalAccessException("每次最多爬取10条数据");
-//                }
             }
         } catch (Exception e) {
             log.error("循环体报错：", e);
