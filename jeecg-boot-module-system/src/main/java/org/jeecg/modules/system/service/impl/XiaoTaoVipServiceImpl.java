@@ -31,7 +31,7 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
 
     private static final String INDEX_URL = "https://www.xiaotao.vip";
 
-    private static final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(200, 200, 60, TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>(100000));
+    private static final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(32, 32, 60, TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>(100000));
 
     @Override
     public void getXiaoTaoSource() {
