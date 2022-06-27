@@ -14,6 +14,13 @@ public interface IXiaoTaoVipService extends IService<XiaoTaoVip> {
     /**
      * 爬取数据
      */
-    void getXiaoTaoSource(Integer totalCount) throws Exception;
+    void getXiaoTaoSource() throws Exception;
+
+    /**
+     * 指定目录查询
+     *
+     * @param url
+     */
+    void secondDir(String url) throws Exception;
 
 }

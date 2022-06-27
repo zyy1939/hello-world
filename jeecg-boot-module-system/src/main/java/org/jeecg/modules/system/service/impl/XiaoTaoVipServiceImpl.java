@@ -3,7 +3,6 @@ package org.jeecg.modules.system.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.system.entity.XiaoTaoVip;
 import org.jeecg.modules.system.mapper.XiaoTaoVipMapper;
@@ -30,16 +29,22 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTaoVip> implements IXiaoTaoVipService {
 
-    private static Integer COUNT = 0;
     private static final String INDEX_URL = "https://www.xiaotao.vip";
 
-    private static final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(32, 32, 60, TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>(100000));
+    private static final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(200, 200, 60, TimeUnit.MICROSECONDS, new LinkedBlockingDeque<>(100000));
 
     @Override
-    public void getXiaoTaoSource(Integer totalCount) throws Exception {
-        // 初始化总爬取条数
-        COUNT = totalCount;
+    public void getXiaoTaoSource() {
+        new Thread(() -> {
+            try {
+                this.doMusicSource();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
+    private void doMusicSource() throws Exception {
         Document document = Jsoup.connect(INDEX_URL).get();
         Elements elements = document.getElementsByClass("col-4");
         for (Element element : elements) {
@@ -56,13 +61,12 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
             log.info(imgUrl);
 
             // 网页二级目录
-            THREAD_POOL.submit(() -> this.secondDir(encode));
-//            new Thread(() -> this.secondDir(encode)).start();
+            this.secondDir(encode);
         }
     }
 
-    @SneakyThrows
-    private void secondDir(String url) {
+    @Override
+    public void secondDir(String url) throws Exception {
         try {
             // 延迟访问，防止被宿主机限流
             Thread.sleep(1000L);
@@ -76,8 +80,14 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
             }
         } catch (Exception e) {
             log.error(url + "_目录查询报错：", e);
-            log.error("链接超时，重新爬取:", e.getMessage());
-            THREAD_POOL.submit(() -> this.secondDir(url));
+//            log.error("链接超时，重新爬取:", e.getMessage());
+//            THREAD_POOL.submit(() -> {
+//                try {
+//                    this.secondDir(url);
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//            });
         }
     }
 

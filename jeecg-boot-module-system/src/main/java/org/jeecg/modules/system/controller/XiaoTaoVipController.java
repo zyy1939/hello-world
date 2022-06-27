@@ -39,14 +39,29 @@ public class XiaoTaoVipController extends JeecgController<XiaoTaoVip, IXiaoTaoVi
      */
     @AutoLog(value = "音乐网-爬取数据")
     @ApiOperation(value = "音乐网-爬取数据", notes = "爬取数据")
-    @GetMapping(value = "/getXiaoTaoSource/{totalCount}")
-    public Result<String> getXiaoTaoSource(@PathVariable Integer totalCount) {
+    @GetMapping(value = "/getXiaoTaoSource")
+    public Result<String> getXiaoTaoSource() {
         try {
-            xiaoTaoVipService.getXiaoTaoSource(totalCount);
+            this.xiaoTaoVipService.getXiaoTaoSource();
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
         return Result.OK("数据爬取中...");
+    }
+
+    /**
+     * 爬取指定目录
+     */
+    @AutoLog(value = "音乐网-爬取指定目录")
+    @ApiOperation(value = "音乐网-爬取指定目录", notes = "爬取指定目录")
+    @GetMapping(value = "/getSourceByUrl")
+    public Result<String> getSourceByUrl(String url) {
+        try {
+            this.xiaoTaoVipService.secondDir(url);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        return Result.OK("指定URL数据爬取中...");
     }
 
     /**
