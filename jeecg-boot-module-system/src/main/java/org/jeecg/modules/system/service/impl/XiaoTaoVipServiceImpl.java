@@ -81,14 +81,14 @@ public class XiaoTaoVipServiceImpl extends ServiceImpl<XiaoTaoVipMapper, XiaoTao
             }
         } catch (Exception e) {
             log.error(url + "_目录查询报错：", e);
-//            log.error("链接超时，重新爬取:", e.getMessage());
-//            THREAD_POOL.submit(() -> {
-//                try {
-//                    this.secondDir(url);
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
-//            });
+            log.error("链接超时，重新爬取:", e.getMessage());
+            THREAD_POOL.submit(() -> {
+                try {
+                    this.secondDir(url);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
         }
     }
 
